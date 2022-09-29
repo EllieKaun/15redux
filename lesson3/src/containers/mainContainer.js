@@ -2,28 +2,60 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import Card from "../components/card";
+import { req } from "../redux/action";
+import { Box, Button } from "@mui/material";
 
 const MainContainer = () => {
-  const [bruh, setBruh] = useState("");
+  const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data);
-  console.log(data);
-
-  const handleRequest = () => {
-    dispatch({ type: "GET_DATA", payload: bruh });
-  };
+  const state = useSelector((state) => state.data);
+  const [filter, setFilter] = useState("Diamond is Unbreakable");
+  console.log(Object?.keys(state));
 
   useEffect(() => {
-    axios
-      .get("https://jojoapi.herokuapp.com/")
-      .then((data) => setBruh(data.data));
+    dispatch(req());
   }, []);
-  useEffect(() => {
-    console.log(bruh);
-  }, [bruh]);
+
   return (
     <>
-      <button onClick={handleRequest}>123</button>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "20px",
+          marginBottom: "20px",
+          "& button": { width: "200px", height: "70px" },
+        }}
+      >
+        {state ? (
+          Object?.keys(state).map((item) => (
+            <Button
+              variant="contained"
+              onClick={() => {
+                setFilter(item);
+              }}
+            >
+              {item}
+            </Button>
+          ))
+        ) : (
+          <></>
+        )}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        {state?.[filter] ? (
+          state?.[filter]?.map((item) => <Card item={item} />)
+        ) : (
+          <></>
+        )}
+      </Box>
     </>
   );
 };
